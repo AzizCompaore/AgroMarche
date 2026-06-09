@@ -40,11 +40,13 @@ cd AgroMarche
 2. Créer et activer l'environnement virtuel
 ```bash
 python -m venv .venv
-
-# Windows
+```
+Windows :
+```bash
 .venv\Scripts\activate
-
-# macOS / Linux
+```
+macOS / Linux :
+```bash
 source .venv/bin/activate
 ```
 3. Installer les dépendances
@@ -63,7 +65,7 @@ python manage.py createsuperuser
 ```bash
 python manage.py runserver
 ```
-L'application est accessible sur http://127.0.0.1:8000.
+L'application est accessible sur http://127.0.0.1:8000.  
 L'interface d'administration Django est disponible sur http://127.0.0.1:8000/admin.
 ---
 🗺️ Routes principales
@@ -104,6 +106,6 @@ Définir `ALLOWED_HOSTS` avec le domaine réel
 Servir les fichiers statiques et media via un serveur web (Nginx, etc.)
 ---
 👤 Auteur
-Compaoré Abdoul Aziz
-GitHub : @AzizCompaore
+Compaoré Abdoul Aziz  
+GitHub : @AzizCompaore  
 LinkedIn : aziz-compaore-549337299
