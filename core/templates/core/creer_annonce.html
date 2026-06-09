@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h3 class="fw-bold text-success mb-0">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Publier un nouveau stock
+                    </h3>
+                    <p class="text-muted">Remplissez les détails pour attirer les acheteurs</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.culture.label }}</label>
+                                {{ form.culture }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.ville.label }}</label>
+                                {{ form.ville }}
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.quantite.label }}</label>
+                                <div class="input-group">
+                                    {{ form.quantite }}
+                                    <span class="input-group-text bg-light">kg</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">{{ form.prix_demande.label }}</label>
+                                <div class="input-group">
+                                    {{ form.prix_demande }}
+                                    <span class="input-group-text bg-light text-success fw-bold">CFA</span>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Photo du produit</label>
+                                <div class="p-3 border border-dashed rounded-3 bg-light text-center">
+                                    {{ form.image }}
+                                    <small class="text-muted d-block mt-2">Format conseillé : JPG ou PNG</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Description supplémentaire</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-grid">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill py-3 fw-bold">
+                                Mettre en vente mon stock
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-link text-muted mt-2">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 bg-success text-white rounded-4 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold"><i class="bi bi-lightbulb me-2"></i>Conseils de vente</h5>
+                    <ul class="small mt-3 list-unstyled">
+                        <li class="mb-3"><i class="bi bi-check-circle-fill me-2"></i><strong>Prix :</strong> Comparez avec les prix officiels pour vendre plus vite.</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill me-2"></i><strong>Photos :</strong> Une photo réelle de votre stock augmente la confiance.</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill me-2"></i><strong>Lieu :</strong> Soyez précis sur la ville pour faciliter le transport.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-info border-0 rounded-4">
+                <h6 class="fw-bold"><i class="bi bi-shield-lock me-2"></i>Sécurité</h6>
+                <p class="small mb-0">Vos coordonnées ne sont partagées qu'avec les acheteurs vérifiés.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-dashed { border-style: dashed !important; border-width: 2px !important; }
+    .form-control:focus, .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.1);
+    }
+</style>
+{% endblock %}

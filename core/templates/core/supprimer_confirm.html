@@ -1,0 +1,19 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="card shadow-sm border-0 p-5 mx-auto" style="max-width: 500px;">
+        <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+        <h2 class="fw-bold mt-3">Supprimer l'annonce ?</h2>
+        <p class="text-muted">Voulez-vous vraiment supprimer votre stock de <strong>{{ annonce.quantite }}kg de {{ annonce.culture.name }}</strong> ?</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-danger btn-lg rounded-pill">Confirmer la suppression</button>
+                <a href="{% url 'mes_annonces' %}" class="btn btn-light btn-lg rounded-pill">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

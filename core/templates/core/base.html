@@ -1,0 +1,231 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroMarché - Le Marché Direct des Planteurs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Animation de cascade */
+        .fade-in-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-card.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .product-card { transition: transform 0.3s ease, box-shadow 0.3s ease; border-radius: 16px; overflow: hidden; }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+        .navbar { border-bottom: 2px solid #198754; }
+        .hover-opacity-100:hover { opacity: 1 !important; transition: 0.3s; }
+    </style>
+</head>
+<body class="bg-light">
+   <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm py-2">
+    <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}" style="height: 80px; width: 250px; overflow: hidden; position: relative;">
+    <img src="{% static 'core/images/logo.png' %}" alt="AgroMarché"
+         style="
+            position: absolute;
+            height: 350px;
+            width: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain;
+         ">
+</a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'home' %}text-success{% endif %}" href="{% url 'home' %}">Accueil</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'liste_annonces' %}text-success{% endif %}" href="{% url 'liste_annonces' %}">
+                        <i class="bi bi-shop me-1"></i>Marché
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                    {% if user.profil.role == 'acheteur' %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'liste_favoris' %}text-danger{% endif %}" href="{% url 'liste_favoris' %}">
+                                <i class="bi bi-heart-fill me-1"></i>Mes Favoris
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% if user.profil.role == 'vendeur' %}
+                        <li class="nav-item">
+                            <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'mes_annonces' %}text-success{% endif %}" href="{% url 'mes_annonces' %}">Mes Stocks</a>
+                        </li>
+                        <li class="nav-item ms-lg-3">
+                            <a class="btn btn-success rounded-pill px-4 shadow-sm fw-bold" href="{% url 'creer_annonce' %}">Publier</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link dropdown-toggle fw-bold text-dark" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle text-success me-1"></i>{{ user.username|capfirst }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3">
+                            <li><a class="dropdown-item" href="{% url 'mon_profil' %}"><i class="bi bi-gear me-2"></i>Mon Profil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'deconnexion' %}"><i class="bi bi-box-arrow-right me-2"></i>Déconnexion</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link fw-semibold" href="{% url 'connexion' %}">Connexion</a></li>
+                    <li class="nav-item ms-lg-2"><a class="btn btn-outline-success rounded-pill px-4 fw-bold" href="{% url 'inscription' %}">S'inscrire</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+<div class="container position-relative" style="margin-bottom: -100px; z-index: 2;">
+    <div class="rounded-5 p-4 p-md-5 shadow-lg border-0"
+         style="background: linear-gradient(135deg, #d4edda 0%, #ffffff 100%); border: 2px solid #a1d9b4 !important;">
+        <div class="row align-items-center position-relative">
+            <div class="col-lg-7 px-md-4 text-center text-lg-start">
+                <span class="badge bg-success px-3 py-2 rounded-pill mb-3 fw-bold shadow-sm" style="background-color: #28a745 !important;">
+                    AgroMarché Direct
+                </span>
+                <h2 class="display-6 fw-bold mb-3" style="color: #155724;">Connectez vos récoltes au monde entier.</h2>
+                <p class="fs-5 mb-4" style="color: #218838;">Rejoignez plus de 500 planteurs ivoiriens déjà connectés.</p>
+                <a href="{% url 'creer_annonce' %}" class="btn btn-success btn-lg px-5 rounded-pill fw-bold shadow-sm border-0" style="background-color: #28a745;">
+                    Démarrer maintenant
+                </a>
+            </div>
+            <div class="col-lg-5 text-center text-lg-end mt-4 mt-lg-0">
+                <img src="https://cdn-icons-png.flaticon.com/512/685/685025.png" alt="Arbre"
+                     style="height: 180px; filter: drop-shadow(0 10px 15px rgba(40, 167, 69, 0.2));"
+                     class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="pb-4" style="background-color: #f1fcf4; padding-top: 130px !important; border-top: 3px solid #d4edda;">
+    <div class="container">
+        <div class="row gy-5">
+            <div class="col-lg-4 text-center text-lg-start">
+                <a class="navbar-brand fw-bold fs-3 mb-3 d-block text-dark" href="{% url 'home' %}">
+                    <i class="bi bi-sprout-fill text-success me-2"></i>Agro<span class="text-success">Marché</span>
+                </a>
+                <p class="text-muted small mb-4" style="max-width: 320px; line-height: 1.7;">
+                    La plateforme qui valorise le travail des planteurs ivoiriens en les connectant directement au marché mondial.
+                </p>
+                <div class="d-flex justify-content-center justify-content-lg-start gap-2">
+                    <a href="#" class="btn btn-outline-success btn-sm rounded-circle p-2"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" class="btn btn-outline-success btn-sm rounded-circle p-2"><i class="bi bi-whatsapp fs-5"></i></a>
+                    <a href="#" class="btn btn-outline-success btn-sm rounded-circle p-2"><i class="bi bi-instagram fs-5"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-6 px-4">
+                <h6 class="fw-bold text-uppercase mb-4 small" style="letter-spacing: 1px; color: #28a745;">Navigation</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-3"><a href="{% url 'home' %}" class="text-dark text-decoration-none opacity-75 hover-green">Accueil</a></li>
+                    <li class="mb-3"><a href="{% url 'liste_annonces' %}" class="text-dark text-decoration-none opacity-75 hover-green">Le Marché</a></li>
+                    <li class="mb-3"><a href="{% url 'creer_annonce' %}" class="text-dark text-decoration-none opacity-75 hover-green">Vendre</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-6 px-4">
+                <h6 class="fw-bold text-uppercase mb-4 small" style="letter-spacing: 1px; color: #28a745;">Mon Compte</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-3"><a href="{% url 'mon_profil' %}" class="text-dark text-decoration-none opacity-75 hover-green">Mon Profil</a></li>
+                    <li class="mb-3"><a href="#" class="text-dark text-decoration-none opacity-75 hover-green">Mes Favoris</a></li>
+                    <li class="mb-3"><a href="#" class="text-dark text-decoration-none opacity-75 hover-green">Aide</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <h6 class="fw-bold text-uppercase mb-4 small" style="letter-spacing: 1px; color: #28a745;">Contact Direct</h6>
+                <div class="p-4 rounded-4 shadow-sm" style="background: #ffffff; border: 1px solid #d4edda;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-3 p-2 me-3 text-success">
+                            <i class="bi bi-telephone-outbound-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <small class="d-block text-muted text-uppercase" style="font-size: 0.6rem;">Appellez-nous</small>
+                            <span class="fw-bold text-dark">+225 01-42-26-03-19</span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-25 rounded-3 p-2 me-3 text-dark">
+                            <i class="bi bi-envelope-check-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <small class="d-block text-muted text-uppercase" style="font-size: 0.6rem;">Email Support</small>
+                            <span class="fw-bold text-dark">info@agromarche.ci</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-5 border-success opacity-10">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 text-muted small">
+            <p class="mb-0">&copy; 2026 AgroMarché Côte d'Ivoire. Tous droits réservés.</p>
+            <div class="d-flex gap-4">
+                <a href="#" class="text-muted text-decoration-none">Conditions</a>
+                <a href="#" class="text-muted text-decoration-none">Confidentialité</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .hover-green:hover {
+        color: #28a745 !important;
+        padding-left: 8px;
+        opacity: 1 !important;
+        transition: all 0.3s ease;
+    }
+    .btn-success:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3) !important;
+        transition: all 0.3s ease;
+    }
+</style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add("appear");
+                        }, index * 100);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll(".fade-in-card").forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

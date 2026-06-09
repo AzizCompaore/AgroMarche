@@ -1,0 +1,122 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h1 class="fw-bold display-5 text-dark">Le <span class="text-success">Marché</span></h1>
+            <p class="text-muted fs-5">Explorez l'intégralité des stocks disponibles en Côte d'Ivoire.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <span class="badge bg-light text-dark border p-2 rounded-pill px-3">
+                <i class="bi bi-box-seam text-success me-2"></i>{{ annonces|length }} Offres trouvées
+            </span>
+        </div>
+    </div>
+
+    <div class="mb-5">
+        <h6 class="fw-bold mb-3 text-uppercase small text-muted" style="letter-spacing: 1px;">
+            <i class="bi bi-funnel-fill me-2"></i>Filtrer par culture
+        </h6>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'liste_annonces' %}" class="text-decoration-none">
+                <div class="filter-tag {% if not culture_active %}active{% endif %}">
+                    Tous les produits
+                </div>
+            </a>
+            {% for c in cultures %}
+            <a href="?culture={{ c.name }}" class="text-decoration-none">
+                <div class="filter-tag {% if culture_active == c.name %}active{% endif %}">
+                    {{ c.name }}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for annonce in annonces %}
+        <div class="col-md-6 col-lg-4 col-xl-3 fade-in-card">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 product-card bg-white">
+                <div class="position-relative">
+                    {% if annonce.image %}
+                        <img src="{{ annonce.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="bi bi-image text-muted fs-1"></i>
+                        </div>
+                    {% endif %}
+
+                    <div class="position-absolute bottom-0 start-0 m-2">
+                        <span class="badge bg-dark bg-opacity-75 rounded-pill shadow-sm">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ annonce.ville }}
+                        </span>
+                    </div>
+
+                    {% if user.is_authenticated and user.profil.role == 'acheteur' %}
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <a href="{% url 'toggle_favori' annonce.id %}" class="btn btn-white btn-sm rounded-circle shadow-sm border">
+                            {% if annonce.id in user_favoris_ids %}
+                                <i class="bi bi-heart-fill text-danger"></i>
+                            {% else %}
+                                <i class="bi bi-heart text-dark"></i>
+                            {% endif %}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h5 class="fw-bold mb-0 text-dark">{{ annonce.culture.name }}</h5>
+                        <div class="text-end">
+                            <span class="text-success fw-bold fs-5">{{ annonce.prix_demande }}</span>
+                            <small class="text-muted d-block" style="font-size: 0.65rem;">CFA/kg</small>
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mb-4">
+                        <i class="bi bi-person me-1"></i> Par {{ annonce.vendeur.username|capfirst }}
+                    </p>
+
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'detail_annonce' annonce.pk %}" class="btn btn-success flex-grow-1 rounded-pill fw-bold btn-sm py-2">
+                            Voir détails
+                        </a>
+                        {% if annonce.vendeur.profil.telephone %}
+                        <a href="https://wa.me/{{ annonce.vendeur.profil.telephone|cut:' '|cut:'+' }}" class="btn btn-outline-success rounded-circle shadow-sm" title="Contacter sur WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-white p-5 rounded-4 shadow-sm border">
+                <i class="bi bi-search text-muted display-1 opacity-25"></i>
+                <h4 class="mt-4 fw-bold">Aucun stock trouvé</h4>
+                <p class="text-muted">Il n'y a pas d'annonces pour cette catégorie pour le moment.</p>
+                <a href="{% url 'liste_annonces' %}" class="btn btn-success rounded-pill px-4 fw-bold mt-2">Réinitialiser les filtres</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .filter-tag {
+        background: white; border: 1px solid #ddd; padding: 8px 20px; border-radius: 50px;
+        color: #555; font-weight: 600; font-size: 0.9rem; transition: all 0.2s ease;
+    }
+    .filter-tag:hover { border-color: #198754; color: #198754; background: #f8fff9; }
+    .filter-tag.active { background: #198754; color: white; border-color: #198754; }
+
+    .btn-white { background: white; border: none; }
+    .btn-white:hover { background: #f8f9fa; }
+
+    .product-card { transition: all 0.3s ease; }
+    .product-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important; }
+</style>
+{% endblock %}
