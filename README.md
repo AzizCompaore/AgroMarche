@@ -1,120 +1,238 @@
-🌾 AgroMarché Pro
-> Plateforme de mise en relation entre producteurs agricoles et acheteurs en Afrique de l'Ouest.
-AgroMarché Pro est une application web qui permet aux planteurs et coopératives de publier leurs stocks agricoles, et aux acheteurs / exportateurs de consulter les offres disponibles, le tout en temps réel et en FCFA.
----
-✨ Fonctionnalités
-Pour les vendeurs (Planteurs / Coopératives)
-📢 Publier une annonce de stock (culture, quantité, prix, ville, photo)
-📋 Consulter et gérer ses propres annonces
-🗑️ Supprimer une annonce
-Pour les acheteurs (Acheteurs / Exportateurs)
-🛒 Parcourir le marché et filtrer les annonces par culture
-❤️ Sauvegarder des annonces en favoris
-📞 Contacter le vendeur via son numéro WhatsApp
-Pour tous
-💰 Consulter les prix officiels de référence par culture (en FCFA/kg)
-👤 Créer un compte avec un rôle défini (vendeur ou acheteur)
-✏️ Modifier son profil (téléphone, ville)
----
-🌱 Cultures supportées
-Noix de cajou · Cacao · Café · Caoutchouc · Arachides · Maïs · Sorgho · Coton · et autres cultures de rente
----
-🛠️ Stack technique
-Composant	Technologie
-Backend	Python 3 / Django
-Base de données	SQLite (développement)
-Frontend	Bootstrap 5 + Django Templates
-Traitement images	Pillow (compression automatique)
-Authentification	Django Auth intégré
-Langue	Français (`fr-fr`)
----
-🚀 Installation
-Prérequis
-Python 3.10+
-pip
-Étapes
-```bash
-# 1. Cloner le dépôt
-git clone https://github.com/ton-username/agromarche-pro.git
-cd agromarche_pro
+# 🚇 KONEKT — Métro d'Abidjan
 
-# 2. Créer et activer l'environnement virtuel
-python -m venv .venv
+Plateforme web de réservation de billets pour le réseau de métro d'Abidjan (Ligne 1 : Anyama ↔ Aéroport FHB Port-Bouët). Développée avec Django, elle permet aux voyageurs d'acheter des tickets en ligne avec génération de QR code, et offre un tableau de bord de supervision pour les agents.
 
-# Sur Linux / macOS
-source .venv/bin/activate
+\---
 
-# Sur Windows
-.venv\Scripts\activate
+## ✨ Fonctionnalités
 
-# 3. Installer les dépendances
-pip install django pillow
+### Côté Voyageur
 
-# 4. Appliquer les migrations
-python manage.py migrate
+* **Recherche de trajets** : sélection de la gare de départ et d'arrivée, affichage des prochains départs disponibles
+* **Calcul tarifaire dynamique** : le prix est calculé selon le nombre de zones traversées (200 à 800 FCFA)
+* **Calcul d'heure de passage** : l'heure affichée correspond à l'heure de passage réelle à la gare choisie (décalage de 3 min par escale)
+* **Réservation en ligne** : formulaire passager avec choix du mode de paiement (Orange Money, MTN MoMo, Wave)
+* **Ticket numérique** : billet PDF imprimable avec QR code unique généré à la réservation
+* **Historique des voyages** : espace personnel listant tous les tickets achetés
+* **Carte interactive Leaflet** : visualisation du tracé de la Ligne 1 avec le segment du trajet mis en surbrillance
 
-# 5. (Optionnel) Créer un super-utilisateur pour l'admin
-python manage.py createsuperuser
+### Côté Agent / Administration
 
-# 6. Lancer le serveur de développement
-python manage.py runserver
+* **Dashboard de supervision** : nombre total de billets émis, revenu global, activité récente
+* **Graphique 7 jours** : volume de réservations sur la dernière semaine
+* **Recherche de ticket** : vérification d'un billet par son code
+* **Scan QR Code** : validation ou invalidation d'un billet à l'embarquement via l'URL de scan
+
+\---
+
+## 🗂️ Structure du projet
+
 ```
-L'application est accessible à : http://127.0.0.1:8000
-L'interface d'administration Django est accessible à : http://127.0.0.1:8000/admin
----
-📁 Structure du projet
-```
-agromarche_pro/
-│
-├── agromarche_pro/          # Configuration du projet Django
-│   ├── settings.py          # Paramètres (BDD, médias, langue...)
-│   ├── urls.py              # Routage principal
+Metro\_Abidjan/
+├── konekt\_project/          # Configuration Django
+│   ├── settings.py
+│   ├── urls.py
 │   ├── wsgi.py
 │   └── asgi.py
-│
-├── core/                    # Application principale
-│   ├── models.py            # Modèles : Profil, Crop, OfficialPrice, Annonce, Favori
-│   ├── views.py             # Vues : accueil, marché, annonces, favoris, profil
-│   ├── forms.py             # Formulaires : inscription, annonce, profil
+├── transport/               # Application principale
+│   ├── models.py            # Commune, Gare, Voyage, Reservation
+│   ├── views.py             # Toutes les vues
 │   ├── urls.py              # Routes de l'application
 │   ├── admin.py             # Interface d'administration
-│   ├── migrations/          # Migrations de la base de données
-│   ├── templates/core/      # Templates HTML
-│   │   ├── base.html
-│   │   ├── home.html
-│   │   ├── liste_annonces.html
-│   │   ├── detail_annonce.html
-│   │   ├── creer_annonce.html
-│   │   ├── mes_annonces.html
-│   │   ├── favoris.html
-│   │   ├── profil.html
-│   │   ├── inscription.html
-│   │   └── connexion.html
-│   └── static/core/         # Images et fichiers statiques
-│
-├── media/                   # Fichiers uploadés par les utilisateurs
-│   └── annonces/
-│
+│   ├── migrations/          # Migrations de base de données
+│   └── templates/
+│       └── transport/
+│           ├── home.html          # Page d'accueil + recherche
+│           ├── resultats.html     # Résultats de recherche
+│           ├── form\_passager.html # Formulaire de réservation
+│           ├── ticket.html        # Billet numérique
+│           ├── mes\_tickets.html   # Historique voyageur
+│           ├── agent\_dashboard.html # Dashboard agent
+│           ├── scan\_result.html   # Résultat de scan QR
+│           ├── login.html
+│           └── inscription.html
+├── static/
+│   └── images/              # Images statiques du site
+├── media/
+│   └── qr\_codes/            # QR codes générés
+├── db.sqlite3               # Base de données SQLite
 └── manage.py
 ```
----
-🗄️ Modèles de données
-Modèle	Description
-`Profil`	Extension du `User` Django avec rôle, téléphone, ville
-`Crop`	Culture agricole (nom + icône Bootstrap)
-`OfficialPrice`	Prix officiel de référence par culture (FCFA/kg)
-`Annonce`	Stock mis en vente par un vendeur
-`Favori`	Association unique entre un acheteur et une annonce
----
-🖼️ Optimisation des images
-Les photos uploadées avec les annonces sont automatiquement :
-Redimensionnées à 1000×1000 px maximum
-Converties en JPEG
-Compressées à 75% de qualité
-Cela réduit significativement le poids des fichiers tout en conservant une qualité visuelle satisfaisante.
----
-🔒 Gestion des accès
-La publication d'annonces est réservée aux utilisateurs avec le rôle vendeur
-La consultation du marché et des détails d'annonces est accessible à tous
-Les favoris, le profil et la gestion des stocks nécessitent d'être connecté
----
+
+\---
+
+## ⚙️ Installation
+
+### Prérequis
+
+* Python 3.10+
+* pip
+
+### 1\. Cloner / extraire le projet
+
+```bash
+cd Metro\_Abidjan
+```
+
+### 2\. Créer un environnement virtuel
+
+```bash
+python -m venv venv
+
+# Windows
+venv\\Scripts\\activate
+
+# macOS / Linux
+source venv/bin/activate
+```
+
+### 3\. Installer les dépendances
+
+```bash
+pip install django qrcode\[pil] Pillow
+```
+
+### 4\. Appliquer les migrations
+
+```bash
+python manage.py migrate
+```
+
+### 5\. Créer un superutilisateur (admin)
+
+```bash
+python manage.py createsuperuser
+```
+
+### 6\. Lancer le serveur
+
+```bash
+python manage.py runserver
+```
+
+Le site est accessible sur **http://127.0.0.1:8000/**
+
+\---
+
+## 🌐 Routes principales
+
+|URL|Vue|Description|
+|-|-|-|
+|`/`|`accueil`|Page d'accueil et recherche de trajets|
+|`/reserver/<id>/`|`reserver\_etape\_1`|Formulaire passager|
+|`/valider/<id>/`|`valider\_reservation`|Confirmation et génération du ticket|
+|`/ticket/<code>/`|`voir\_ticket`|Affichage d'un ticket|
+|`/mes-tickets/`|`mes\_tickets`|Historique des réservations (connecté)|
+|`/scan/<code>/`|`valider\_ticket\_scan`|Validation QR code par l'agent|
+|`/agent-control/`|`dashboard\_agent`|Dashboard de supervision (staff)|
+|`/login/`|`login\_view`|Connexion|
+|`/inscription/`|`inscription\_view`|Création de compte|
+|`/admin/`|Django Admin|Gestion complète des données|
+
+\---
+
+## 🗃️ Modèles de données
+
+### `Commune`
+
+Représente une commune sur la ligne (ordonnée par `position`).
+
+|Champ|Type|Description|
+|-|-|-|
+|`nom`|CharField|Nom de la commune|
+|`position`|PositiveIntegerField|Ordre sur la ligne (unique)|
+
+### `Gare`
+
+Station du réseau, rattachée à une commune.
+
+|Champ|Type|Description|
+|-|-|-|
+|`nom`|CharField|Nom de la gare|
+|`commune`|ForeignKey|Commune de rattachement|
+
+### `Voyage`
+
+Départ planifié sur la ligne.
+
+|Champ|Type|Description|
+|-|-|-|
+|`sens`|CharField|`ALLER` (Anyama→Port-Bouët) ou `RETOUR`|
+|`jour\_depart`|DateField|Date du départ|
+|`heure\_depart`|TimeField|Heure de départ au terminus|
+|`est\_ouvert`|BooleanField|Ouvert à la réservation|
+|`gare\_depart\_defaut`|ForeignKey|Terminus de départ (auto-rempli)|
+|`gare\_arrivee\_defaut`|ForeignKey|Terminus d'arrivée (auto-rempli)|
+
+### `Reservation`
+
+Ticket acheté par un passager.
+
+|Champ|Type|Description|
+|-|-|-|
+|`voyage`|ForeignKey|Voyage associé|
+|`nom\_passager`|CharField|Nom|
+|`prenom\_passager`|CharField|Prénom|
+|`gare\_depart\_nom`|CharField|Nom de la gare de départ|
+|`gare\_arrivee\_nom`|CharField|Nom de la gare d'arrivée|
+|`code\_ticket`|CharField|Code unique (ex: `KNEKT-AF92`)|
+|`prix\_paye`|PositiveIntegerField|Montant en FCFA|
+|`mode\_paiement`|CharField|Orange / MTN / Wave|
+|`heure\_reelle\_passage`|TimeField|Heure de passage calculée à la gare choisie|
+|`qr\_code`|ImageField|Image du QR code généré|
+|`est\_valide`|BooleanField|`True` = ticket non encore utilisé|
+|`date\_utilisation`|DateTimeField|Horodatage du passage en contrôle|
+
+\---
+
+## 🔐 Accès et rôles
+
+|Rôle|Accès|
+|-|-|
+|**Visiteur**|Recherche, consultation des horaires, achat de tickets sans compte|
+|**Voyageur connecté**|+ Historique des tickets (`/mes-tickets/`)|
+|**Agent (is\_staff)**|+ Dashboard de supervision, validation des QR codes|
+|**Superadmin**|+ Interface `/admin/` complète|
+
+\---
+
+## 🧮 Logique tarifaire
+
+Le prix est calculé selon le nombre de zones (positions de communes) séparant le départ de l'arrivée :
+
+|Zones traversées|Tarif|
+|-|-|
+|0 – 1|200 FCFA|
+|2|300 FCFA|
+|3|400 FCFA|
+|4|500 FCFA|
+|5|600 FCFA|
+|6+|800 FCFA|
+
+\---
+
+## 🗺️ Ligne 1 — Stations
+
+La Ligne 1 relie **Anyama Centre** à **l'Aéroport FHB Port-Bouët** en 18 stations sur \~37 km, traversant : Anyama, Abobo, Adjamé, le Plateau, Treichville, Marcory, Koumassi et Port-Bouët.
+
+\---
+
+## 🛠️ Technologies utilisées
+
+|Technologie|Usage|
+|-|-|
+|**Django 6.0**|Framework web backend|
+|**SQLite**|Base de données (développement)|
+|**Tailwind CSS** (CDN)|Styles et mise en page|
+|**Leaflet.js**|Carte interactive du tracé|
+|**Chart.js**|Graphique du dashboard agent|
+|**qrcode\[pil]**|Génération des QR codes|
+|**Font Awesome**|Icônes|
+
+\---
+
+## 👥 Auteurs
+
+Développé par **Aziz Compaoré**   
+© 2026 KONEKT Métro Abidjan
+
